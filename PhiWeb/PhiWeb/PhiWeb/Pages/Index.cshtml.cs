@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text;
 using System;
 using Microsoft.AspNetCore.Http;
+using static PhiWeb.Pages.IndexModel;
 
 namespace PhiWeb.Pages
 {
@@ -31,16 +32,26 @@ namespace PhiWeb.Pages
         //private StringBuilder wholeMessage = new StringBuilder();
         private string WholeMessage;
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            var messages = HttpContext.Session.GetString("Messages");
-            if (messages != null)
-            {
-                Messages = JsonSerializer.Deserialize<List<Message>>(messages);
-            }
-            CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
-            LastText = HttpContext.Session.GetString("LastText");
-            WholeMessage = HttpContext.Session.GetString("WholeMessage");
+            //var messages = HttpContext.Session.GetString("Messages");
+            //if (messages != null)
+            //{
+            //    Messages = JsonSerializer.Deserialize<List<Message>>(messages);
+            //}
+            //CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
+            //LastText = HttpContext.Session.GetString("LastText");
+            //WholeMessage = HttpContext.Session.GetString("WholeMessage");
+            CurrentMessage = ""; // Simulating message storage
+            var Messages = new List<Message>();
+            HttpContext.Session.SetString("CurrentMessage", "");
+            HttpContext.Session.SetString("WholeMessage", "");
+            HttpContext.Session.SetString("LastText", "");
+            var serializedMessages = JsonSerializer.Serialize(Messages);
+            HttpContext.Session.SetString("Messages", serializedMessages);
+            HttpContext.Session.SetInt32("StopGenerating", 0);
+            await HttpContext.Session.CommitAsync();
+
         }
 
         // Handler for sending messages
