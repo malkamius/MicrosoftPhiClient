@@ -29,53 +29,39 @@ namespace PhiWeb.Pages
         private List<Message> Messages = new List<Message>();
         private string LastText = string.Empty;
         private string url = "http://localhost:9090/generate";
-        //private StringBuilder wholeMessage = new StringBuilder();
         private string WholeMessage;
 
         public async Task OnGet()
         {
-            //var messages = HttpContext.Session.GetString("Messages");
-            //if (messages != null)
-            //{
-            //    Messages = JsonSerializer.Deserialize<List<Message>>(messages);
-            //}
-            //CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
-            //LastText = HttpContext.Session.GetString("LastText");
-            //WholeMessage = HttpContext.Session.GetString("WholeMessage");
             CurrentMessage = ""; // Simulating message storage
-            var Messages = new List<Message>();
             HttpContext.Session.SetString("CurrentMessage", "");
             HttpContext.Session.SetString("WholeMessage", "");
             HttpContext.Session.SetString("LastText", "");
-            var serializedMessages = JsonSerializer.Serialize(Messages);
+            var serializedMessages = JsonSerializer.Serialize(new List<Message>());
             HttpContext.Session.SetString("Messages", serializedMessages);
             HttpContext.Session.SetInt32("StopGenerating", 0);
             await HttpContext.Session.CommitAsync();
-
         }
 
         // Handler for sending messages
         public async Task<IActionResult> OnPostSendMessage(string message)
         {
+            await HttpContext.Session.LoadAsync();
             var messages = HttpContext.Session.GetString("Messages");
-            if (messages != null)
+            if (!string.IsNullOrEmpty(messages))
             {
                 Messages = JsonSerializer.Deserialize<List<Message>>(messages);
             }
-            CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
-            LastText = HttpContext.Session.GetString("LastText");
-            WholeMessage = HttpContext.Session.GetString("WholeMessage");
+            //CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
+            //LastText = HttpContext.Session.GetString("LastText");
+            //WholeMessage = HttpContext.Session.GetString("WholeMessage");
 
-            if (!string.IsNullOrEmpty(CurrentMessage))
-            {
-                // Fail, still processing
-            }
             // Store or send the message to your Flask application here
             CurrentMessage = message; // Simulating message storage
             Messages.Add(new Message { role = "user", content = message });
             HttpContext.Session.SetString("CurrentMessage", CurrentMessage);
-            HttpContext.Session.SetString("WholeMessage", WholeMessage ?? "");
-            HttpContext.Session.SetString("LastText", LastText ?? "");
+            HttpContext.Session.SetString("WholeMessage", "");
+            HttpContext.Session.SetString("LastText", "");
             var serializedMessages = JsonSerializer.Serialize(Messages);
             HttpContext.Session.SetString("Messages", serializedMessages);
             HttpContext.Session.SetInt32("StopGenerating", 0);
@@ -90,7 +76,7 @@ namespace PhiWeb.Pages
         {
             await HttpContext.Session.LoadAsync();
             var messages = HttpContext.Session.GetString("Messages") ?? "";
-            if (messages != null)
+            if (!string.IsNullOrEmpty(messages))
             {
                 Messages = JsonSerializer.Deserialize<List<Message>>(messages);
             }
@@ -170,6 +156,10 @@ namespace PhiWeb.Pages
                     CurrentMessage = string.Empty; // Reset after end condition
                     LastText = string.Empty;
                     WholeMessage = string.Empty;
+                    HttpContext.Session.SetString("CurrentMessage", CurrentMessage);
+                    HttpContext.Session.SetString("WholeMessage", WholeMessage);
+                    HttpContext.Session.SetString("LastText", LastText);
+                    await HttpContext.Session.CommitAsync();
                 }
                 return new JsonResult(myResponse);
             }
@@ -180,12 +170,11 @@ namespace PhiWeb.Pages
         {
             await HttpContext.Session.LoadAsync();
             var messages = HttpContext.Session.GetString("Messages");
-            if (messages != null)
+            if (!string.IsNullOrEmpty(messages))
             {
                 Messages = JsonSerializer.Deserialize<List<Message>>(messages);
             }
-            CurrentMessage = HttpContext.Session.GetString("CurrentMessage");
-            LastText = HttpContext.Session.GetString("LastText");
+           
             WholeMessage = HttpContext.Session.GetString("WholeMessage");
 
             CurrentMessage = string.Empty;

@@ -10,7 +10,7 @@
 
 <!-- Messages Display Area -->
 <div class="row">
-    <div id="messagesDisplay" class="col-md-12" style="height: 70vh; overflow-y: auto; border: 1px solid #dee2e6;">
+    <div id="messagesDisplay" class="col-md-12" style="height: 40vh; overflow-y: auto; border: 1px solid #dee2e6;">
         <!-- Placeholder for messages -->
         <p>Your previous chat will be listed here...</p>
         <!-- More messages would dynamically load here -->
@@ -29,8 +29,9 @@
 
 @section Scripts {
     <script>
+        var messageIndex = 0;
         function sendMessage() {
-            var messageId = 'message-' + new Date().getTime(); // Unique ID for each message
+            var messageId = 'message-' + new Date().getTime() + messageIndex++; // Unique ID for each message
             $('#messagesDisplay').append('<p id="' + messageId + '">Sending message...</p>');
             $('#messagesDisplay').append('<p id="response' + messageId + '"></p>'); // Prepare for response updates
             $.ajax({
@@ -48,19 +49,22 @@
             });
         }
         var thesupertimer = undefined;
+        var stopgenerating = false;
         function startCheckingMessages(responseMessageId) {
+            stopgenerating = false;
             thesupertimer = setInterval(function () { checkMessages(responseMessageId, thesupertimer); }, 1000);
         }
 
         function checkMessages(responseMessageId, timer) {
             clearInterval(thesupertimer);
+            if(stopgenerating) return; 
             $.ajax({
                 url: "?handler=CheckMessages",
                 success: function (response) {
                     var $responseElement = $('#' + responseMessageId); // Select the last message <p> using its ID
                     $responseElement.text($responseElement.text() + response); // Append new response text
 
-                    if (response.indexOf("--end of text") == -1) {
+                    if (response.indexOf("--end of text") == -1 && stopgenerating == false) {
                         thesupertimer = setInterval(function () { checkMessages(responseMessageId, thesupertimer); }, 1000);
                     }
                 },
@@ -72,6 +76,7 @@
         }
 
         function stopMessages() {
+            stopgenerating = true; 
             if (typeof thesupertimer !== 'undefined') {
                 clearInterval(thesupertimer); // Stop the active interval
             }
