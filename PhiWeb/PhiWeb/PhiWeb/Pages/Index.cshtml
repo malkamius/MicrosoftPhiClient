@@ -5,7 +5,7 @@
 }
 @section Styles {
     <style> 
-        pre {
+        .formatted {
             white-space: pre-wrap;       /* Since CSS 2.1 */
             white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
             white-space: -pre-wrap;      /* Opera 4-6 */
@@ -42,8 +42,8 @@
         var messageIndex = 0;
         function sendMessage() {
             var messageId = 'message-' + new Date().getTime() + messageIndex++; // Unique ID for each message
-            $('#messagesDisplay').append('<pre style="color: black;" id="' + messageId + '">Sending message...</pre>');
-            $('#messagesDisplay').append('<pre style="color: red;" id="response' + messageId + '"></pre>'); // Prepare for response updates
+            $('#messagesDisplay').append('<p class="formatted" style="color: black;" id="' + messageId + '">Sending message...</p>');
+            $('#messagesDisplay').append('<p class="formatted" style="color: red;" id="response' + messageId + '"></p>'); // Prepare for response updates
             $.ajax({
                 type: "POST",
                 url: "?handler=SendMessage",
