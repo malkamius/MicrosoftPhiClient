@@ -2,23 +2,23 @@
  Connect to a Flask server and submit LLM Requests
 
 # Dependencies
- You may need to install the cuda framework from 
- https://developer.nvidia.com/cuda-downloads?target_os=Windows
+ You may need to install the cuda framework from <br />
+ https://developer.nvidia.com/cuda-downloads?target_os=Windows <br />
 # Python environment
-Create a virtual environment (optional but recommended):
+Create a virtual environment (optional but recommended): <br />
+<br />
+This keeps your installations and project separate from your main Python installation. <br />
+<br />
+<br />
+On a command line go to where you want to create the python environment <br />
+python -m venv myenv <br />
+From the same command line run  <br />
+myenv\Scripts\activate.bat <br />
+<br />
+pip install accelerate <br />
+pip install Flask <br />
+pip install transformers <br />
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 <br />
 
-This keeps your installations and project separate from your main Python installation.
-bash
-
-On a command line go to where you want to create the python environment
-python -m venv myenv
-From the same command line run 
-myenv\Scripts\activate.bat
-
-pip install accelerate
-pip install Flask
-pip install transformers
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-navigate to the phi-py folder on the command line
-python serve.py
+navigate to the phi-py folder on the command line <br />
+python serve.py <br />
