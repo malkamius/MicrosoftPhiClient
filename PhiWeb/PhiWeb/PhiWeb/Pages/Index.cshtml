@@ -1,0 +1,90 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Phi Web Client</h1>
+</div>
+
+<!-- Messages Display Area -->
+<div class="row">
+    <div id="messagesDisplay" class="col-md-12" style="height: 70vh; overflow-y: auto; border: 1px solid #dee2e6;">
+        <!-- Placeholder for messages -->
+        <p>Your previous chat will be listed here...</p>
+        <!-- More messages would dynamically load here -->
+    </div>
+</div>
+
+<!-- Message Submission Area -->
+<div class="row mt-3">
+    <div class="col-md-12">
+        @Html.AntiForgeryToken()
+        <textarea id="messageInput" class="form-control" rows="3" placeholder="Type your message here..."></textarea>
+        <button onclick="sendMessage()" class="btn btn-primary mt-2">Send</button>
+        <button onclick="stopMessages()" class="btn btn-danger mt-2">Stop</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function sendMessage() {
+            var messageId = 'message-' + new Date().getTime(); // Unique ID for each message
+            $('#messagesDisplay').append('<p id="' + messageId + '">Sending message...</p>');
+            $('#messagesDisplay').append('<p id="response' + messageId + '"></p>'); // Prepare for response updates
+            $.ajax({
+                type: "POST",
+                url: "?handler=SendMessage",
+                headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+                data: { message: $('#messageInput').val() },
+                success: function (response) {
+                    $('#' + messageId).text(response); // Update the text of the newly added <p>
+                    startCheckingMessages('response' + messageId); // Pass response messageId to continue updates on this element
+                },
+                error: function () {
+                    $('#' + messageId).text('Error sending message.');
+                }
+            });
+        }
+        var thesupertimer = undefined;
+        function startCheckingMessages(responseMessageId) {
+            thesupertimer = setInterval(function () { checkMessages(responseMessageId, thesupertimer); }, 1000);
+        }
+
+        function checkMessages(responseMessageId, timer) {
+            clearInterval(thesupertimer);
+            $.ajax({
+                url: "?handler=CheckMessages",
+                success: function (response) {
+                    var $responseElement = $('#' + responseMessageId); // Select the last message <p> using its ID
+                    $responseElement.text($responseElement.text() + response); // Append new response text
+
+                    if (response.indexOf("--end of text") == -1) {
+                        thesupertimer = setInterval(function () { checkMessages(responseMessageId, thesupertimer); }, 1000);
+                    }
+                },
+                error: function () {
+                    $('#' + responseMessageId).text('Error checking messages.');
+                    clearInterval(thesupertimer); // Also clear interval on error to prevent further attempts
+                }
+            });
+        }
+
+        function stopMessages() {
+            if (typeof thesupertimer !== 'undefined') {
+                clearInterval(thesupertimer); // Stop the active interval
+            }
+            $.ajax({
+                url: "?handler=StopProcessing",
+                headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+                success: function (response) {
+                    $('#messagesDisplay').append('<p>' + response + '</p>');
+                },
+                error: function () {
+                    $('#messagesDisplay').append('<p>Error stopping generation.</p>');
+                }
+            });
+        }
+    </script>
+}
