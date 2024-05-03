@@ -3,14 +3,24 @@
 @{
     ViewData["Title"] = "Home page";
 }
-
+@section Styles {
+    <style> 
+        pre {
+            white-space: pre-wrap;       /* Since CSS 2.1 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
+    </style>
+}
 <div class="text-center">
     <h1 class="display-4">Welcome to Phi Web Client</h1>
 </div>
 
 <!-- Messages Display Area -->
 <div class="row">
-    <div id="messagesDisplay" class="col-md-12" style="height: 40vh; overflow-y: auto; border: 1px solid #dee2e6;">
+    <div id="messagesDisplay" class="col-md-12" style="height: 40vh; overflow-y: auto; border: 1px solid #dee2e6; overflow-wrap: break-word;">
         <!-- Placeholder for messages -->
         <p>Your previous chat will be listed here...</p>
         <!-- More messages would dynamically load here -->
@@ -32,15 +42,17 @@
         var messageIndex = 0;
         function sendMessage() {
             var messageId = 'message-' + new Date().getTime() + messageIndex++; // Unique ID for each message
-            $('#messagesDisplay').append('<p id="' + messageId + '">Sending message...</p>');
-            $('#messagesDisplay').append('<p id="response' + messageId + '"></p>'); // Prepare for response updates
+            $('#messagesDisplay').append('<pre style="color: black;" id="' + messageId + '">Sending message...</pre>');
+            $('#messagesDisplay').append('<pre style="color: red;" id="response' + messageId + '"></pre>'); // Prepare for response updates
             $.ajax({
                 type: "POST",
                 url: "?handler=SendMessage",
                 headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                 data: { message: $('#messageInput').val() },
                 success: function (response) {
-                    $('#' + messageId).text(response); // Update the text of the newly added <p>
+                    $('#' + messageId).html(response); // Update the text of the newly added <p>
+                    var $messagesDisplay = $('#messagesDisplay');
+                    $messagesDisplay.scrollTop($messagesDisplay[0].scrollHeight);
                     startCheckingMessages('response' + messageId); // Pass response messageId to continue updates on this element
                 },
                 error: function () {
@@ -62,8 +74,11 @@
                 url: "?handler=CheckMessages",
                 success: function (response) {
                     var $responseElement = $('#' + responseMessageId); // Select the last message <p> using its ID
-                    $responseElement.text($responseElement.text() + response); // Append new response text
-
+                    
+                    $responseElement.html($responseElement.html() + response); // Append new response text
+                    
+                    var $messagesDisplay = $('#messagesDisplay');
+                    $messagesDisplay.scrollTop($messagesDisplay[0].scrollHeight);
                     if (response.indexOf("--end of text") == -1 && stopgenerating == false) {
                         thesupertimer = setInterval(function () { checkMessages(responseMessageId, thesupertimer); }, 1000);
                     }

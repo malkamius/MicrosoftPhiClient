@@ -41,7 +41,7 @@ def generate():
             prompt_tokens = tokenizer.encode(prompt, return_tensors="pt")
             prompt_length = prompt_tokens.shape[1] - 1
             #print(f"Prompt length in tokens: {prompt_length}")
-            outputs = pipe(prompt, max_new_tokens=5, return_tensors="pt")
+            outputs = pipe(prompt, max_new_tokens=50, return_tensors="pt")
             output_tokens = outputs[0]["generated_token_ids"]  # Assuming a single batch output
             #print(f"Generated tokens: {output_tokens}")
 

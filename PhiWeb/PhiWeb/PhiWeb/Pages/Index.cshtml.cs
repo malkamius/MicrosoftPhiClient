@@ -68,7 +68,7 @@ namespace PhiWeb.Pages
             await HttpContext.Session.CommitAsync();
             // Simulate sending message to another system (e.g., Flask)
             // Here you might call a service that interacts with Flask
-            return new JsonResult("Message sent: " + message);
+            return new JsonResult("Message sent: " + message);//.Replace("\n", "<br />\n").Replace("\t", "\t&ensp;"));
         }
 
         // Handler for checking messages
@@ -121,12 +121,12 @@ namespace PhiWeb.Pages
                             HttpContext.Session.SetString("Messages", serializedMessages);
                             WholeMessage = "";
                             CurrentMessage = "";
-                            myResponse = LastText;
+                            myResponse = LastText;//.Replace("\n", "<br />\n").Replace("\t", "\t&ensp;");
                             LastText = "";
                         } 
                         else
                         {
-                            myResponse = LastText;
+                            myResponse = LastText;//.Replace("\n", "<br />\n").Replace("\t", "\t&ensp;");
                         }
 
                         HttpContext.Session.SetString("CurrentMessage", CurrentMessage);
