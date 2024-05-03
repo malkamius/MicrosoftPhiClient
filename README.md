@@ -2,7 +2,7 @@
  Connect to a Flask server and submit LLM Requests
 
 # Dependencies
- You may need to install the cude framework from 
+ You may need to install the cuda framework from 
  https://developer.nvidia.com/cuda-downloads?target_os=Windows
 # Python environment
 Create a virtual environment (optional but recommended):
