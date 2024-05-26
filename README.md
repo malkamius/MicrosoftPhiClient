@@ -15,9 +15,8 @@ python -m venv myenv <br />
 From the same command line run  <br />
 myenv\Scripts\activate.bat <br />
 <br />
-pip install accelerate <br />
+pip install transformers accelerate bitsandbytes <br />
 pip install Flask <br />
-pip install transformers <br />
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 <br />
 
 navigate to the phi-py folder on the command line <br />

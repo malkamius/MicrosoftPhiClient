@@ -15,13 +15,14 @@ class TextGenerator:
         global lock
         with lock:
             self.model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/Phi-3-mini-128k-instruct",
+                "leliuga/Phi-3-mini-128k-instruct-bnb-4bit",
+                #"microsoft/Phi-3-mini-128k-instruct",
                 device_map="cuda",
                 torch_dtype="auto",
                 trust_remote_code=True,
                 attn_implementation="eager",
             )
-            self.tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-128k-instruct")
+            self.tokenizer = AutoTokenizer.from_pretrained("leliuga/Phi-3-mini-128k-instruct-bnb-4bit")
             self.pipe = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
 
     def generate(self, messages, lasttext):
